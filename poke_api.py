@@ -7,14 +7,17 @@ logger.setLevel("INFO")
 
 
 # for pokemon in dict_response
-POKEMON_SPECIES_URL = "https://pokeapi.co/api/v2/pokemon-species/"
-SELECTED_GAMES = ["red", "blue", "leafgreen", "white"]
+
 # STARTING_OFFSET = 0
-LIMIT = 100
+# LIMIT = 100
 
 
-def get_pokemon():
+def get_pokemon()-> dict:
+    POKEMON_SPECIES_URL = "https://pokeapi.co/api/v2/pokemon-species/"
+    SELECTED_GAMES = ["red", "blue", "leafgreen", "white"]
     STARTING_OFFSET = 0
+    LIMIT = 100
+
     pokemon_by_version = {version: [] for version in SELECTED_GAMES}
 
     while True:
@@ -27,6 +30,7 @@ def get_pokemon():
             raise error
 
         pokemon_species_request_dict = pokemon_species_request.json()
+        
         get_pokemon_results = pokemon_species_request_dict["results"]
 
         if len(get_pokemon_results) == 0:
@@ -56,6 +60,7 @@ def get_pokemon():
             break
         else:
             STARTING_OFFSET += LIMIT
+    return pokemon_by_version
 
 
 if __name__ == "__main__":
