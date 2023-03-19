@@ -1,66 +1,79 @@
 import requests
-import json
 import logging
+import time
+import requests_cache
 
 logger = logging.getLogger(__name__)
 logger.setLevel("INFO")
 
 
-# for pokemon in dict_response
-
-# STARTING_OFFSET = 0
-# LIMIT = 100
+def save_response():
+    return None
 
 
-def get_pokemon()-> dict:
-    POKEMON_SPECIES_URL = "https://pokeapi.co/api/v2/pokemon-species/"
-    SELECTED_GAMES = ["red", "blue", "leafgreen", "white"]
-    STARTING_OFFSET = 0
-    LIMIT = 100
+def get_pokemon_species(offset: int, limit: int, session: requests.Session):
+    all_url = "https://pokeapi.co/api/v2/pokemon-species/"
 
-    pokemon_by_version = {version: [] for version in SELECTED_GAMES}
+    try:
+        pokemon_species_dict_response = session.get(
+            f"{all_url}?offset={offset}&limit={limit}"
+        ).json()
+    except requests.exceptions.ConnectionError:
+        time.sleep(secs=2**offset)
+
+        pokemon_species_dict_response = get_pokemon_species(
+            offset=offset, limit=limit, session=session
+        )
+    return pokemon_species_dict_response
+
+
+def filter_pokemon_data(pokemon_data: dict, wanted_games: list, offset: int) -> dict:
+    pokemon_by_version = {version: [] for version in wanted_games}
+    pokemon_urls = set()
+
+    for pokemon in pokemon_data["results"]:
+        individual_pokemon = pokemon["url"]
+        try:
+            pokemon_info_dict_response = requests.get(url=individual_pokemon).json()
+        except requests.exceptions.ConnectionError:
+            time.sleep(secs=2**offset)
+            continue
+        if len(pokemon_info_dict_response["flavor_text_entries"]) > 0:
+            for flavor_text_entry in pokemon_info_dict_response["flavor_text_entries"]:
+                version_name = flavor_text_entry["version"]["name"]
+                if version_name in wanted_games:
+                    url = pokemon["url"].split("/")[-2]
+                    pokemon_by_version[version_name].append(
+                        url
+                    )
+    return pokemon_by_version
+
+
+def get_pokemon() -> set:
+    wanted_games = ["red", "blue", "leafgreen", "white"]
+    OFFSET = 0
+    LIMIT = 150
+
+    SESSION = requests.Session()
+    requests_cache.install_cache()  # 56 seconds
+
+    pokemon_urls = set()
 
     while True:
-        try:
-            pokemon_species_request = requests.get(
-                f"{POKEMON_SPECIES_URL}?offset={STARTING_OFFSET}&limit={LIMIT}"
-            )
-        except requests.exceptions.ConnectionError() as error:
-            logger.info("Something went wrong with the call.")
-            raise error
+        pokemon_ids = get_pokemon_species(offset=OFFSET, limit=LIMIT, session=SESSION)
 
-        pokemon_species_request_dict = pokemon_species_request.json()
-        
-        get_pokemon_results = pokemon_species_request_dict["results"]
+        pokemon_by_version = filter_pokemon_data(
+            pokemon_ids, wanted_games, offset=OFFSET
+        )
 
-        if len(get_pokemon_results) == 0:
-            break
-
-        for pokemon_url in get_pokemon_results:
-            pokemon_id_url = pokemon_url["url"]
-
-            try:
-                individual_pokemon_request = requests.get(pokemon_id_url)
-            except requests.exceptions.ConnectionError() as error:
-                logger.info("Something went wrong with the call.")
-                raise error
-
-            individual_pokemon_dict = individual_pokemon_request.json()
-
-            if len(individual_pokemon_dict["flavor_text_entries"]) > 0:
-                for game_version in individual_pokemon_dict["flavor_text_entries"]:
-                    version_name = game_version["version"]["name"]
-
-                    if version_name in SELECTED_GAMES and game_version["flavor_text"]:
-                        pokemon_by_version[version_name].append(pokemon_url["name"])
-
-                    break
-
-        if pokemon_species_request_dict["next"]:
+        for version, pokemon_list in pokemon_by_version.items():
+            pokemon_urls.update(pokemon_list)
+        if not pokemon_ids["next"]:
             break
         else:
-            STARTING_OFFSET += LIMIT
-    return pokemon_by_version
+            OFFSET += LIMIT
+
+    return pokemon_urls
 
 
 if __name__ == "__main__":
