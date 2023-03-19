@@ -1,0 +1,6 @@
+
+#VS Code
+.vscode/
+development/
+filtered_pokemon_ids/
+http_cache.sqlite
