@@ -151,7 +151,6 @@ def get_pokemon_in_versions(
     """
     requests_cache.install_cache()
 
-    # pokemon_urls = set()
     pokemon_ids = set()
 
     while True:
