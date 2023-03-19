@@ -1,8 +1,8 @@
 install_requirements:
-	pip install -r requirements.txt
+	pip install -r requirements/requirements.txt
 
-clean_pyenv:
-	pip uninstall -y -r <(pip freeze)
+install_local:
+	pip install -r requirements/local.txt
 
 run_pokemon_api:
 	python poke_api.py
