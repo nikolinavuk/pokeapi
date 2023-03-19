@@ -1,0 +1,7 @@
+requests==2.28.2
+requests-cache==1.0.0
+black==23.1.0
+pre-commit==3.2.0
+mimesis==7.0.0
+faker==17.6.0
+ipykernel==6.21.3

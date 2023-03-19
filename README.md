@@ -1,13 +1,13 @@
 
-# Lego Pokemon Api Task  <!-- omit in toc -->
+# Pokemon Api Task  <!-- omit in toc -->
 
-This repo is to solve the mandatory requirements from the POKE API task at lego.
+This repo is to solve the mandatory requirements from the POKE API.
 
 - [Installation](#installation)
-- [Primary Requirements](#primary-requirements)
 - [Running the Application](#running-the-application)
 - [Bonus Requirements](#bonus-requirements)
 - [Working with the code](#working-with-the-code)
+- [Future Work](#future-work)
 
 ---
 
@@ -19,15 +19,6 @@ This repo is to solve the mandatory requirements from the POKE API task at lego.
     ```terminal
     make install_requirements
     ```
-
-## Primary Requirements
-
-1. The name, id, base_experience, weight, height and order of all Pokémon that appear in the any of the games `red`, `blue`, `leafgreen` or `white`.
-2. The name of the `slot 1` (and if available `2`) type of each of the Pokémon's types.
-3. The Body Mass Index of the Pokémon (hint: The formula for `BMI` is weight (kg) / height (m2))
-4. The first letter of names of the Pokémon should be capitalized.
-5. The url of the `front_default sprite`.
-6. Prepare the data in an appropriate data format. Consider if it should be multiple or a single file.
 
 ## Running the Application
 
@@ -46,7 +37,19 @@ This repo is to solve the mandatory requirements from the POKE API task at lego.
 ## Bonus Requirements
 
 - Inside the repo there is a development folder which addresses some ideas such as GDPR request
+- To use it make sure to have the requirements/local.txt installed
+
+    ```terminal
+    make install_local
+    ```
 
 ## Working with the code
 
 - The code is written in Jupyter notebooks to speed up development, and to not spam the endpoints
+
+## Future Work
+
+1. Add unit tests
+2. Consider timeouts when making API calls?
+3. Async calls? Yes or no?
+4. Faker and Mimesis to obfuscate data
