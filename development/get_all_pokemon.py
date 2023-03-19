@@ -2,7 +2,7 @@ import requests
 import sys
 
 # for pokemon in dict_response
-#all_url = "https://pokeapi.co/api/v2/pokemon/"
+# all_url = "https://pokeapi.co/api/v2/pokemon/"
 all_url = "https://pokeapi.co/api/v2/pokemon-species/"
 wanted_games = ["red"]  # , "blue"]  # , "leafgreen", "white"]
 
